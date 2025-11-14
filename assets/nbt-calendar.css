@@ -1,0 +1,159 @@
+/* Główny wrapper */
+.nbt-cal-wrapper {
+  max-width: 1100px;
+  margin: 30px auto;
+  padding: 0 10px;
+  overflow-x: auto; /* na mobile kalendarz może przewijać się w poziomie */
+}
+
+/* Kalendarz */
+#nbt-calendar {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #111827;
+}
+
+/* Nagłówek z nawigacją */
+.nbt-cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.nbt-cal-month-label {
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.nbt-cal-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.nbt-cal-nav button {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #374151;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nbt-cal-nav button:hover {
+  background: #f3f4f6;
+}
+
+/* Dni tygodnia */
+.nbt-cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(90px, 1fr));
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.nbt-cal-weekday {
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+/* Siateczka dni */
+.nbt-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(90px, 1fr));
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nbt-cal-day {
+  min-height: 90px;
+  border-right: 1px solid #e5e7eb;
+  border-top: 1px solid #e5e7eb;
+  padding: 6px 6px 10px;
+  font-size: 12px;
+  vertical-align: top;
+}
+
+.nbt-cal-day:nth-child(7n) {
+  border-right: none;
+}
+
+.nbt-cal-day-empty {
+  background: #f9fafb;
+}
+
+/* Numer dnia */
+.nbt-cal-day-number {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+/* Lista świąt */
+.nbt-cal-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nbt-cal-events li {
+  margin-bottom: 2px;
+}
+
+.nbt-cal-event-link {
+  text-decoration: none;
+  color: #111827;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.nbt-cal-event-link:hover {
+  text-decoration: underline;
+}
+
+/* Dzisiaj – delikatne oznaczenie */
+.nbt-cal-day-today {
+  background: #ecfdf5;
+  outline: 1px solid #34d399;
+  outline-offset: -1px;
+}
+
+/* Mobile / węższe ekrany */
+@media (max-width: 768px) {
+
+  #nbt-calendar {
+    padding: 14px;
+  }
+
+  .nbt-cal-month-label {
+    font-size: 16px;
+  }
+
+  .nbt-cal-weekdays,
+  .nbt-cal-grid {
+    grid-template-columns: repeat(7, minmax(70px, 1fr));
+  }
+
+  .nbt-cal-day {
+    min-height: 80px;
+    padding: 4px;
+    font-size: 11px;
+  }
+
+  .nbt-cal-day-number {
+    font-size: 12px;
+  }
+}
