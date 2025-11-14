@@ -4,6 +4,21 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
+  const formatPreviewLink = function (rawLink) {
+    if (!rawLink) {
+      return '';
+    }
+
+    try {
+      const parsed = new URL(rawLink, window.location.origin);
+      let path = parsed.pathname && parsed.pathname !== '/' ? parsed.pathname : '';
+      path = path.replace(/\/$/, '');
+      return parsed.hostname + path;
+    } catch (e) {
+      return rawLink;
+    }
+  };
+
   // Ustawienia początkowe
   let currentDate = new Date();
 
@@ -23,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnPrev = document.createElement('button');
   btnPrev.type = 'button';
   btnPrev.innerHTML = '‹ Poprzedni';
+  btnPrev.setAttribute('aria-label', 'Pokaż poprzedni miesiąc');
 
   navPrevWrapper.appendChild(btnPrev);
 
@@ -35,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const btnNext = document.createElement('button');
   btnNext.type = 'button';
   btnNext.innerHTML = 'Następny ›';
+  btnNext.setAttribute('aria-label', 'Pokaż następny miesiąc');
 
   navNextWrapper.appendChild(btnNext);
 
@@ -99,16 +116,34 @@ document.addEventListener('DOMContentLoaded', function () {
         cell.classList.add('nbt-cal-day-today');
       }
 
+      const topRow = document.createElement('div');
+      topRow.className = 'nbt-cal-day-top';
+
       const num = document.createElement('div');
       num.className = 'nbt-cal-day-number';
       num.textContent = day;
-      cell.appendChild(num);
+      topRow.appendChild(num);
 
       const eventsForDay = nbtCalendarEvents.filter(function (ev) {
         return ev.date === cellDateStr;
       });
 
+      cell.appendChild(topRow);
+
       if (eventsForDay.length > 0) {
+        cell.classList.add('nbt-cal-day-has-event');
+        cell.setAttribute('tabindex', '0');
+        cell.setAttribute(
+          'aria-label',
+          'Święta: ' + eventsForDay.map(function (ev) { return ev.title; }).join(', ') + ' (' + cellDateStr + ')'
+        );
+
+        const badge = document.createElement('span');
+        badge.className = 'nbt-cal-event-count';
+        badge.textContent = eventsForDay.length;
+        badge.title = eventsForDay.length === 1 ? '1 wydarzenie' : eventsForDay.length + ' wydarzenia';
+        topRow.appendChild(badge);
+
         const list = document.createElement('ul');
         list.className = 'nbt-cal-events';
 
@@ -122,7 +157,31 @@ document.addEventListener('DOMContentLoaded', function () {
           list.appendChild(li);
         });
 
+        const preview = document.createElement('div');
+        preview.className = 'nbt-cal-day-preview';
+
+        eventsForDay.forEach(function (ev) {
+          const previewItem = document.createElement('div');
+          previewItem.className = 'nbt-cal-day-preview-item';
+
+          const previewTitle = document.createElement('div');
+          previewTitle.className = 'nbt-cal-day-preview-title';
+          previewTitle.textContent = ev.title;
+
+          const previewUrl = document.createElement('a');
+          previewUrl.href = ev.link;
+          previewUrl.textContent = formatPreviewLink(ev.link);
+          previewUrl.target = '_blank';
+          previewUrl.rel = 'noopener noreferrer';
+          previewUrl.className = 'nbt-cal-day-preview-url';
+
+          previewItem.appendChild(previewTitle);
+          previewItem.appendChild(previewUrl);
+          preview.appendChild(previewItem);
+        });
+
         cell.appendChild(list);
+        cell.appendChild(preview);
       }
 
       grid.appendChild(cell);
