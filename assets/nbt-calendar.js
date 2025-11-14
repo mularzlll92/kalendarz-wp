@@ -7,6 +7,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const ajaxConfig = typeof nbtCalendarConfig !== 'undefined' ? nbtCalendarConfig : null;
   const previewCache = new Map();
 
+  const truncateWords = function (text, maxWords) {
+    if (!text) {
+      return '';
+    }
+
+    const words = text.trim().split(/\s+/);
+    if (words.length <= maxWords) {
+      return words.join(' ');
+    }
+
+    return words.slice(0, maxWords).join(' ') + '…';
+  };
+
   const requestPreview = function (url) {
     if (!ajaxConfig || !ajaxConfig.ajaxUrl) {
       return Promise.reject(new Error('Brak konfiguracji podglądu.'));
@@ -245,7 +258,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 titleEl.textContent = data.title;
               }
 
-              descEl.textContent = data.description ? data.description : 'Przejdź, aby zobaczyć więcej';
+              const truncatedDesc = truncateWords(data.description || '', 50);
+              descEl.textContent = truncatedDesc || 'Przejdź, aby zobaczyć więcej';
 
               if (data.image) {
                 thumbEl.style.backgroundImage = 'url("' + data.image.replace(/"/g, '') + '")';
