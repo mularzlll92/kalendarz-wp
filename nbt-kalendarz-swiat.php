@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NBT Kalendarz Świąt
  * Description: Prosty miesięczny kalendarz świąt z pełnymi nazwami (shortcode [nbt_kalendarz]).
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Narodowa Baza Talentów
  */
 
@@ -69,7 +69,8 @@ class NBT_Kalendarz_Swiat {
 
     public function metabox_html( $post ) {
         wp_nonce_field( 'nbt_swieto_data_save', 'nbt_swieto_data_nonce' );
-        $value = get_post_meta( $post->ID, '_nbt_swieto_data', true );
+        $value      = get_post_meta( $post->ID, '_nbt_swieto_data', true );
+        $link_value = get_post_meta( $post->ID, '_nbt_swieto_link', true );
         ?>
         <p>
             <label for="nbt_swieto_data">Data:</label><br>
@@ -83,6 +84,20 @@ class NBT_Kalendarz_Swiat {
         </p>
         <p style="font-size:12px;color:#666;">
             Ustaw konkretną datę w formacie RRRR-MM-DD. Nazwa święta pochodzi z tytułu wpisu.
+        </p>
+        <p>
+            <label for="nbt_swieto_link">Adres przekierowania:</label><br>
+            <input
+                type="url"
+                id="nbt_swieto_link"
+                name="nbt_swieto_link"
+                value="<?php echo esc_attr( $link_value ); ?>"
+                placeholder="https://przyklad.pl"
+                style="width:100%;"
+            >
+        </p>
+        <p style="font-size:12px;color:#666;">
+            Podaj pełny adres URL, pod który ma prowadzić święto w kalendarzu. Pozostaw puste, aby użyć domyślnego linku do wpisu.
         </p>
         <?php
     }
@@ -115,6 +130,15 @@ class NBT_Kalendarz_Swiat {
         } else {
             delete_post_meta( $post_id, '_nbt_swieto_data' );
         }
+
+        if ( isset( $_POST['nbt_swieto_link'] ) ) {
+            $link = esc_url_raw( trim( wp_unslash( $_POST['nbt_swieto_link'] ) ) );
+            if ( ! empty( $link ) ) {
+                update_post_meta( $post_id, '_nbt_swieto_link', $link );
+            } else {
+                delete_post_meta( $post_id, '_nbt_swieto_link' );
+            }
+        }
     }
 
     /**
@@ -127,14 +151,14 @@ class NBT_Kalendarz_Swiat {
             'nbt-calendar-css',
             $base . 'nbt-calendar.css',
             [],
-            '1.0.0'
+            '1.1.0'
         );
 
         wp_register_script(
             'nbt-calendar-js',
             $base . 'nbt-calendar.js',
             [],
-            '1.0.0',
+            '1.1.0',
             true
         );
     }
@@ -164,11 +188,14 @@ class NBT_Kalendarz_Swiat {
                     continue;
                 }
 
+                $custom_link = get_post_meta( $id, '_nbt_swieto_link', true );
+                $final_link  = $custom_link ? $custom_link : get_permalink( $id );
+
                 $events[] = [
                     'id'    => $id,
                     'title' => get_the_title(),
                     'date'  => $date, // format RRRR-MM-DD
-                    'link'  => get_permalink( $id ),
+                    'link'  => esc_url( $final_link ),
                 ];
             }
             wp_reset_postdata();

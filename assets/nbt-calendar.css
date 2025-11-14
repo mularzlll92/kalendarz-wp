@@ -8,12 +8,13 @@
 
 /* Kalendarz */
 #nbt-calendar {
-  background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  padding: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #111827;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
 }
 
 /* Nagłówek z nawigacją */
@@ -21,15 +22,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   gap: 10px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), rgba(16, 185, 129, 0.12));
 }
 
 .nbt-cal-month-label {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  color: #1f2937;
 }
 
 .nbt-cal-nav {
@@ -38,20 +43,29 @@
 }
 
 .nbt-cal-nav button {
-  background: transparent;
-  border: 1px solid #d1d5db;
-  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid transparent;
+  padding: 8px 14px;
   border-radius: 999px;
   font-size: 13px;
   cursor: pointer;
-  color: #374151;
+  color: #1d4ed8;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.15);
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .nbt-cal-nav button:hover {
-  background: #f3f4f6;
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+
+.nbt-cal-nav button:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
 }
 
 /* Dni tygodnia */
@@ -60,7 +74,8 @@
   grid-template-columns: repeat(7, minmax(90px, 1fr));
   border-top: 1px solid #e5e7eb;
   border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: #f1f5f9;
+  border-radius: 10px 10px 0 0;
 }
 
 .nbt-cal-weekday {
@@ -75,16 +90,25 @@
 .nbt-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(90px, 1fr));
-  border-bottom: 1px solid #e5e7eb;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  overflow: visible;
 }
 
 .nbt-cal-day {
-  min-height: 90px;
+  min-height: 110px;
   border-right: 1px solid #e5e7eb;
   border-top: 1px solid #e5e7eb;
-  padding: 6px 6px 10px;
+  padding: 10px 10px 14px;
   font-size: 12px;
   vertical-align: top;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  background: #ffffff;
 }
 
 .nbt-cal-day:nth-child(7n) {
@@ -95,11 +119,29 @@
   background: #f9fafb;
 }
 
-/* Numer dnia */
+/* Numer dnia i nagłówek komórki */
+.nbt-cal-day-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
 .nbt-cal-day-number {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.nbt-cal-event-count {
+  background: #312e81;
+  color: #fff;
+  border-radius: 999px;
+  font-size: 11px;
+  min-width: 26px;
+  text-align: center;
+  padding: 2px 6px;
   font-weight: 600;
-  margin-bottom: 4px;
-  font-size: 13px;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* Lista świąt */
@@ -107,21 +149,40 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .nbt-cal-events li {
-  margin-bottom: 2px;
+  margin: 0;
 }
 
 .nbt-cal-event-link {
   text-decoration: none;
-  color: #111827;
+  color: #1f2937;
   line-height: 1.35;
   word-break: break-word;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  font-size: 11px;
+  font-weight: 600;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nbt-cal-event-link:hover {
-  text-decoration: underline;
+  background: #e0e7ff;
+  color: #111827;
+}
+
+.nbt-cal-day-has-event {
+  background: #fdf4ff;
+  border-color: #e0e7ff;
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
 }
 
 /* Dzisiaj – delikatne oznaczenie */
@@ -131,11 +192,75 @@
   outline-offset: -1px;
 }
 
+.nbt-cal-day-preview {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, 18px);
+  width: min(260px, calc(100vw - 40px));
+  background: #111827;
+  color: #f9fafb;
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 5;
+}
+
+.nbt-cal-day-preview::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #111827 transparent;
+}
+
+.nbt-cal-day-preview-item {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nbt-cal-day-preview-item:last-child {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.nbt-cal-day-preview-title {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.nbt-cal-day-preview-url {
+  color: #93c5fd;
+  font-size: 12px;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.nbt-cal-day-preview-url:hover {
+  text-decoration: underline;
+}
+
+.nbt-cal-day-has-event:hover .nbt-cal-day-preview,
+.nbt-cal-day-has-event:focus-within .nbt-cal-day-preview {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 10px);
+}
+
 /* Mobile / węższe ekrany */
 @media (max-width: 768px) {
 
   #nbt-calendar {
-    padding: 14px;
+    padding: 18px;
   }
 
   .nbt-cal-month-label {
@@ -148,12 +273,22 @@
   }
 
   .nbt-cal-day {
-    min-height: 80px;
-    padding: 4px;
+    min-height: 90px;
+    padding: 8px;
     font-size: 11px;
   }
 
   .nbt-cal-day-number {
     font-size: 12px;
+  }
+
+  .nbt-cal-day-preview {
+    left: 0;
+    transform: translate(0, 12px);
+  }
+
+  .nbt-cal-day-has-event:hover .nbt-cal-day-preview,
+  .nbt-cal-day-has-event:focus-within .nbt-cal-day-preview {
+    transform: translate(0, 6px);
   }
 }
