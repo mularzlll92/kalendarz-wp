@@ -3,18 +3,18 @@
   max-width: 1100px;
   margin: 30px auto;
   padding: 0 10px;
-  overflow-x: auto; /* na mobile kalendarz może przewijać się w poziomie */
+  overflow-x: auto;
 }
 
 /* Kalendarz */
 #nbt-calendar {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 24px;
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid #eeeeee;
+  padding: 28px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #111827;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  color: #000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
 }
 
 /* Nagłówek z nawigacją */
@@ -22,11 +22,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   gap: 10px;
-  padding: 12px 18px;
-  border-radius: 14px;
-  background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), rgba(16, 185, 129, 0.12));
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: #eeeeee;
+  border: 1px solid #eeeeee;
 }
 
 .nbt-cal-month-label {
@@ -34,7 +35,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #1f2937;
+  color: #000;
 }
 
 .nbt-cal-nav {
@@ -43,28 +44,28 @@
 }
 
 .nbt-cal-nav button {
-  background: #ffffff;
-  border: 1px solid transparent;
-  padding: 8px 14px;
+  background: #000;
+  border: 1px solid #000;
+  padding: 10px 18px;
   border-radius: 999px;
   font-size: 13px;
   cursor: pointer;
-  color: #1d4ed8;
+  color: #fff;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-weight: 600;
-  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.15);
-  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .nbt-cal-nav button:hover {
-  background: #eff6ff;
+  background: #e7727b;
+  border-color: #e7727b;
   transform: translateY(-1px);
 }
 
 .nbt-cal-nav button:focus-visible {
-  outline: 2px solid #93c5fd;
+  outline: 2px solid #e7727b;
   outline-offset: 2px;
 }
 
@@ -72,43 +73,43 @@
 .nbt-cal-weekdays {
   display: grid;
   grid-template-columns: repeat(7, minmax(90px, 1fr));
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f1f5f9;
-  border-radius: 10px 10px 0 0;
+  border-top: 1px solid #eeeeee;
+  border-bottom: 1px solid #eeeeee;
+  background: #eeeeee;
+  border-radius: 12px 12px 0 0;
 }
 
 .nbt-cal-weekday {
-  padding: 8px 6px;
+  padding: 10px 6px;
   text-align: center;
   font-size: 11px;
-  font-weight: 600;
-  color: #6b7280;
+  font-weight: 700;
+  color: #000;
 }
 
 /* Siateczka dni */
 .nbt-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(90px, 1fr));
-  border: 1px solid #e5e7eb;
+  border: 1px solid #eeeeee;
   border-top: none;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 16px 16px;
   overflow: visible;
 }
 
 .nbt-cal-day {
-  min-height: 110px;
-  border-right: 1px solid #e5e7eb;
-  border-top: 1px solid #e5e7eb;
-  padding: 10px 10px 14px;
+  min-height: 120px;
+  border-right: 1px solid #eeeeee;
+  border-top: 1px solid #eeeeee;
+  padding: 12px 12px 18px;
   font-size: 12px;
   vertical-align: top;
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-  background: #ffffff;
+  gap: 10px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  background: #fff;
 }
 
 .nbt-cal-day:nth-child(7n) {
@@ -116,7 +117,7 @@
 }
 
 .nbt-cal-day-empty {
-  background: #f9fafb;
+  background: #eeeeee;
 }
 
 /* Numer dnia i nagłówek komórki */
@@ -133,15 +134,14 @@
 }
 
 .nbt-cal-event-count {
-  background: #312e81;
+  background: #000;
   color: #fff;
   border-radius: 999px;
   font-size: 11px;
   min-width: 26px;
   text-align: center;
-  padding: 2px 6px;
+  padding: 2px 8px;
   font-weight: 600;
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* Lista świąt */
@@ -151,7 +151,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .nbt-cal-events li {
@@ -160,36 +160,47 @@
 
 .nbt-cal-event-link {
   text-decoration: none;
-  color: #1f2937;
-  line-height: 1.35;
+  color: #000;
+  line-height: 1.4;
   word-break: break-word;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: #eef2ff;
-  font-size: 11px;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #eeeeee;
+  font-size: 12px;
   font-weight: 600;
-  transition: background 0.2s ease, color 0.2s ease;
+  position: relative;
+  transition: border 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+}
+
+.nbt-cal-event-link::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e7727b;
+  flex-shrink: 0;
 }
 
 .nbt-cal-event-link:hover {
-  background: #e0e7ff;
-  color: #111827;
+  border-color: #e7727b;
+  color: #e7727b;
+  transform: translateY(-1px);
 }
 
 .nbt-cal-day-has-event {
-  background: #fdf4ff;
-  border-color: #e0e7ff;
-  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+  border-color: #e7727b;
+  box-shadow: inset 0 0 0 1px rgba(231, 114, 123, 0.3);
 }
 
-/* Dzisiaj – delikatne oznaczenie */
+/* Dzisiaj */
 .nbt-cal-day-today {
-  background: #ecfdf5;
-  outline: 1px solid #34d399;
-  outline-offset: -1px;
+  outline: 2px solid #000;
+  outline-offset: -2px;
 }
 
 .nbt-cal-day-preview {
@@ -197,56 +208,82 @@
   left: 50%;
   top: 100%;
   transform: translate(-50%, 18px);
-  width: min(260px, calc(100vw - 40px));
-  background: #111827;
-  color: #f9fafb;
-  padding: 12px 14px;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.35);
+  width: min(300px, calc(100vw - 40px));
+  background: #000;
+  color: #fff;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   z-index: 5;
+  border: 1px solid #000;
 }
 
 .nbt-cal-day-preview::before {
   content: '';
   position: absolute;
-  top: -6px;
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 6px;
+  border-width: 8px;
   border-style: solid;
-  border-color: transparent transparent #111827 transparent;
+  border-color: transparent transparent #000 transparent;
 }
 
 .nbt-cal-day-preview-item {
-  padding-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
   margin-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-decoration: none;
+  transition: border 0.2s ease, background 0.2s ease;
 }
 
 .nbt-cal-day-preview-item:last-child {
-  border-bottom: 0;
   margin-bottom: 0;
-  padding-bottom: 0;
+}
+
+.nbt-cal-day-preview-item:hover {
+  border-color: #e7727b;
+  background: rgba(231, 114, 123, 0.15);
+}
+
+.nbt-cal-day-preview-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: #000;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nbt-cal-day-preview-thumb-has-image {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.nbt-cal-day-preview-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .nbt-cal-day-preview-title {
   font-weight: 600;
   font-size: 13px;
-  margin-bottom: 4px;
 }
 
-.nbt-cal-day-preview-url {
-  color: #93c5fd;
+.nbt-cal-day-preview-desc {
   font-size: 12px;
-  text-decoration: none;
-  word-break: break-all;
-}
-
-.nbt-cal-day-preview-url:hover {
-  text-decoration: underline;
+  color: #eeeeee;
+  line-height: 1.4;
 }
 
 .nbt-cal-day-has-event:hover .nbt-cal-day-preview,
@@ -256,9 +293,8 @@
   transform: translate(-50%, 10px);
 }
 
-/* Mobile / węższe ekrany */
+/* Mobile */
 @media (max-width: 768px) {
-
   #nbt-calendar {
     padding: 18px;
   }

@@ -4,19 +4,44 @@ document.addEventListener('DOMContentLoaded', function () {
     return;
   }
 
-  const formatPreviewLink = function (rawLink) {
-    if (!rawLink) {
-      return '';
+  const ajaxConfig = typeof nbtCalendarConfig !== 'undefined' ? nbtCalendarConfig : null;
+  const previewCache = new Map();
+
+  const requestPreview = function (url) {
+    if (!ajaxConfig || !ajaxConfig.ajaxUrl) {
+      return Promise.reject(new Error('Brak konfiguracji podglądu.'));
     }
 
-    try {
-      const parsed = new URL(rawLink, window.location.origin);
-      let path = parsed.pathname && parsed.pathname !== '/' ? parsed.pathname : '';
-      path = path.replace(/\/$/, '');
-      return parsed.hostname + path;
-    } catch (e) {
-      return rawLink;
+    if (previewCache.has(url)) {
+      return Promise.resolve(previewCache.get(url));
     }
+
+    const params = new URLSearchParams();
+    params.append('action', 'nbt_calendar_preview');
+    params.append('url', url);
+    params.append('nonce', ajaxConfig.previewNonce || '');
+
+    return fetch(ajaxConfig.ajaxUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
+      body: params.toString()
+    })
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error('Nie udało się pobrać podglądu.');
+        }
+        return response.json();
+      })
+      .then(function (payload) {
+        if (!payload || !payload.success) {
+          throw new Error(payload && payload.data && payload.data.message ? payload.data.message : 'Nie udało się pobrać podglądu.');
+        }
+
+        previewCache.set(url, payload.data);
+        return payload.data;
+      });
   };
 
   // Ustawienia początkowe
@@ -153,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
           a.href = ev.link;
           a.textContent = ev.title;
           a.className = 'nbt-cal-event-link';
+          a.setAttribute('title', ev.title);
           li.appendChild(a);
           list.appendChild(li);
         });
@@ -161,27 +187,89 @@ document.addEventListener('DOMContentLoaded', function () {
         preview.className = 'nbt-cal-day-preview';
 
         eventsForDay.forEach(function (ev) {
-          const previewItem = document.createElement('div');
+          const previewItem = document.createElement('a');
           previewItem.className = 'nbt-cal-day-preview-item';
+          previewItem.href = ev.link;
+          previewItem.dataset.eventId = String(ev.id);
+          previewItem.dataset.eventUrl = ev.link;
 
-          const previewTitle = document.createElement('div');
+          const previewThumb = document.createElement('span');
+          previewThumb.className = 'nbt-cal-day-preview-thumb';
+
+          const previewContent = document.createElement('span');
+          previewContent.className = 'nbt-cal-day-preview-content';
+
+          const previewTitle = document.createElement('span');
           previewTitle.className = 'nbt-cal-day-preview-title';
           previewTitle.textContent = ev.title;
 
-          const previewUrl = document.createElement('a');
-          previewUrl.href = ev.link;
-          previewUrl.textContent = formatPreviewLink(ev.link);
-          previewUrl.target = '_blank';
-          previewUrl.rel = 'noopener noreferrer';
-          previewUrl.className = 'nbt-cal-day-preview-url';
+          const previewDesc = document.createElement('span');
+          previewDesc.className = 'nbt-cal-day-preview-desc';
+          previewDesc.textContent = 'Ładuję podgląd...';
 
-          previewItem.appendChild(previewTitle);
-          previewItem.appendChild(previewUrl);
+          previewContent.appendChild(previewTitle);
+          previewContent.appendChild(previewDesc);
+
+          previewItem.appendChild(previewThumb);
+          previewItem.appendChild(previewContent);
+
           preview.appendChild(previewItem);
         });
 
         cell.appendChild(list);
         cell.appendChild(preview);
+
+        let previewRequested = false;
+        const triggerPreviewLoad = function () {
+          if (previewRequested) {
+            return;
+          }
+          previewRequested = true;
+
+          eventsForDay.forEach(function (ev) {
+            const previewItem = preview.querySelector('[data-event-id="' + ev.id + '"]');
+            if (!previewItem || previewItem.dataset.previewLoaded === '1') {
+              return;
+            }
+
+            const descEl = previewItem.querySelector('.nbt-cal-day-preview-desc');
+            const titleEl = previewItem.querySelector('.nbt-cal-day-preview-title');
+            const thumbEl = previewItem.querySelector('.nbt-cal-day-preview-thumb');
+
+            const applyData = function (data) {
+              if (!titleEl.textContent.trim()) {
+                titleEl.textContent = ev.title;
+              }
+
+              if (data.title) {
+                titleEl.textContent = data.title;
+              }
+
+              descEl.textContent = data.description ? data.description : 'Przejdź, aby zobaczyć więcej';
+
+              if (data.image) {
+                thumbEl.style.backgroundImage = 'url("' + data.image.replace(/"/g, '') + '")';
+                thumbEl.classList.add('nbt-cal-day-preview-thumb-has-image');
+              } else {
+                thumbEl.style.backgroundImage = '';
+                thumbEl.classList.remove('nbt-cal-day-preview-thumb-has-image');
+              }
+
+              previewItem.dataset.previewLoaded = '1';
+            };
+
+            requestPreview(ev.link)
+              .then(applyData)
+              .catch(function () {
+                descEl.textContent = 'Podgląd niedostępny';
+                thumbEl.style.backgroundImage = '';
+                previewItem.dataset.previewLoaded = '1';
+              });
+          });
+        };
+
+        cell.addEventListener('mouseenter', triggerPreviewLoad);
+        cell.addEventListener('focusin', triggerPreviewLoad);
       }
 
       grid.appendChild(cell);
