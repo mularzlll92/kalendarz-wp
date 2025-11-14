@@ -2,7 +2,7 @@
 /**
  * Plugin Name: NBT Kalendarz Świąt
  * Description: Prosty miesięczny kalendarz świąt z pełnymi nazwami (shortcode [nbt_kalendarz]).
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Narodowa Baza Talentów
  */
 
@@ -18,6 +18,8 @@ class NBT_Kalendarz_Swiat {
         add_action( 'save_post', [ $this, 'save_metabox' ] );
         add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
         add_shortcode( 'nbt_kalendarz', [ $this, 'shortcode_calendar' ] );
+        add_action( 'wp_ajax_nbt_calendar_preview', [ $this, 'ajax_preview' ] );
+        add_action( 'wp_ajax_nopriv_nbt_calendar_preview', [ $this, 'ajax_preview' ] );
     }
 
     /**
@@ -151,14 +153,14 @@ class NBT_Kalendarz_Swiat {
             'nbt-calendar-css',
             $base . 'nbt-calendar.css',
             [],
-            '1.1.0'
+            '1.2.0'
         );
 
         wp_register_script(
             'nbt-calendar-js',
             $base . 'nbt-calendar.js',
             [],
-            '1.1.0',
+            '1.2.0',
             true
         );
     }
@@ -204,6 +206,14 @@ class NBT_Kalendarz_Swiat {
         wp_enqueue_style( 'nbt-calendar-css' );
         wp_enqueue_script( 'nbt-calendar-js' );
         wp_localize_script( 'nbt-calendar-js', 'nbtCalendarEvents', $events );
+        wp_localize_script(
+            'nbt-calendar-js',
+            'nbtCalendarConfig',
+            [
+                'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+                'previewNonce' => wp_create_nonce( 'nbt_calendar_preview' ),
+            ]
+        );
 
         ob_start();
         ?>
@@ -214,6 +224,56 @@ class NBT_Kalendarz_Swiat {
         </div>
         <?php
         return ob_get_clean();
+    }
+    /**
+     * AJAX: podgląd linku święta
+     */
+    public function ajax_preview() {
+        if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'nbt_calendar_preview' ) ) {
+            wp_send_json_error( [ 'message' => 'Błąd weryfikacji.' ], 403 );
+        }
+
+        $url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+
+        if ( empty( $url ) ) {
+            wp_send_json_error( [ 'message' => 'Brak adresu URL.' ], 400 );
+        }
+
+        $response = wp_safe_remote_get( $url, [ 'timeout' => 8 ] );
+
+        if ( is_wp_error( $response ) ) {
+            wp_send_json_error( [ 'message' => $response->get_error_message() ], 500 );
+        }
+
+        $body = wp_remote_retrieve_body( $response );
+
+        if ( empty( $body ) ) {
+            wp_send_json_error( [ 'message' => 'Brak treści odpowiedzi.' ], 500 );
+        }
+
+        $meta = [
+            'title'       => '',
+            'description' => '',
+            'image'       => '',
+        ];
+
+        if ( preg_match( '/<meta[^>]+property=["\']og:title["\'][^>]+content=["\']([^"\']+)["\'][^>]*>/i', $body, $matches ) ) {
+            $meta['title'] = sanitize_text_field( $matches[1] );
+        }
+
+        if ( preg_match( '/<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\'][^>]*>/i', $body, $matches ) ) {
+            $meta['description'] = sanitize_text_field( $matches[1] );
+        }
+
+        if ( preg_match( '/<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\'][^>]*>/i', $body, $matches ) ) {
+            $meta['image'] = esc_url_raw( $matches[1] );
+        }
+
+        if ( empty( $meta['title'] ) && preg_match( '/<title>([^<]+)<\/title>/i', $body, $matches ) ) {
+            $meta['title'] = sanitize_text_field( $matches[1] );
+        }
+
+        wp_send_json_success( $meta );
     }
 }
 
